@@ -4,6 +4,7 @@ import com.jk.pojo.ClassBean;
 import com.jk.pojo.EmpBean;
 import com.jk.pojo.StuBean;
 import com.jk.pojo.TreeBean;
+import com.jk.pojo.bookBean;
 import com.jk.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,9 +33,45 @@ public class CarController {
         return carService.findTree();
     }
 
+    @RequestMapping("findcarList")
+    @ResponseBody
+    public HashMap<String,Object>findcarList(Integer page, Integer rows, bookBean book){
+       return carService.findcarList(page,rows,book);
+    }
+
+    @RequestMapping("show2")
+    public String  toshow(){
+        return "show2";
+
+    }
+    @RequestMapping("add")
+    public String  add(){
+        return "add";
+
+    }
+    @RequestMapping("toadd")
+    @ResponseBody
+    public void toadd(bookBean book){
+        carService.toadd(book);
+
+    }
+
+    @RequestMapping("delJobById")
+    @ResponseBody
+    public void delJobById(Integer id){
+        carService.delJobById(id);
+    }
+
+    @RequestMapping("findJobById")
+    @ResponseBody
+    public Optional<bookBean> findJobById(Integer id){
+        return carService.findJobById(id);
+    }
+
+
 
     /**
-     * @Author lh 
+     * @Author lh
      * @Description  show页面
      * @Date 20:10 2021/1/5
      * @Param []
@@ -59,7 +96,7 @@ public class CarController {
     }
 
     /**
-     * @Author lh 
+     * @Author lh
      * @Description  删除
      * @Date 20:21 2021/1/5
      * @Param [id]
@@ -72,7 +109,7 @@ public class CarController {
     }
 
     /**
-     * @Author lh 
+     * @Author lh
      * @Description  修改回显
      * @Date 20:22 2021/1/5
      * @Param [id]

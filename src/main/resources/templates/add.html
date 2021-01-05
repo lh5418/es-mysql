@@ -1,0 +1,40 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Insert title here</title>
+<body>
+<form id="from">
+    <table>
+        <tr>
+            <td><label>姓名</label></td>
+            <td>
+                <input type="text" class="form-control" name="name" id="name">
+            </td>
+        </tr>
+        <tr>
+            <td><label>简介</label></td>
+            <td>
+                <input type="text" class="form-control" name="info" id="info">
+            </td>
+        </tr>
+        <tr>
+            <td><label>年龄</label></td>
+            <td>
+                <input type="text" class="form-control" id="age" name="age">
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+<script>
+    $('.date').datetimepicker({
+        language: 'zh-CN',//显示中文
+        //format: 'yyyy-mm-dd hh:ii:ss',//显示格式
+        format: 'yyyy-mm-dd',//显示格式
+        minView: "month",//设置只显示到月份
+        initialDate: new Date(),//初始化当前日期
+        autoclose: true,//选中自动关闭
+        todayBtn: true//显示今日按钮
+    });
+</script>
+</html>

@@ -6,6 +6,14 @@
 		select * from t_trees where pid=#{pid}
 	</select>
 
+    <insert id="toadd" parameterType="com.jk.pojo.bookBean">
+        insert  into t_book values (#{id},#{name},#{info},#{age})
+    </insert>
+    <update id="updateid">
+        update t_book set name=#{name},info=#{info},age=#{age} where id=#{id}
+
+    </update>
+
     <!--查询班级-->
     <select id="findclass" resultType="com.jk.pojo.ClassBean">
         select * from class

@@ -4,6 +4,7 @@ import com.jk.pojo.ClassBean;
 import com.jk.pojo.EmpBean;
 import com.jk.pojo.StuBean;
 import com.jk.pojo.TreeBean;
+import com.jk.pojo.bookBean;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,14 @@ import java.util.Optional;
  */
 public interface CarService {
     List<TreeBean> findTree();
+
+    HashMap<String, Object> findcarList(Integer page, Integer rows, bookBean book);
+
+    void toadd(bookBean book);
+
+    void delJobById(Integer id);
+
+    Optional<bookBean> findJobById(Integer id);
 
     HashMap<String, Object> efindTable(Integer page, Integer rows, EmpBean empBean);
 

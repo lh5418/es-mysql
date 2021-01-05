@@ -7,7 +7,9 @@ import com.jk.dao.EsDao;
 import com.jk.pojo.ClassBean;
 import com.jk.pojo.EmpBean;
 import com.jk.pojo.StuBean;
+import com.jk.dao.bookDao;
 import com.jk.pojo.TreeBean;
+import com.jk.pojo.bookBean;
 import com.jk.service.CarService;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -22,6 +24,11 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.stereotype.Service;
@@ -40,6 +47,13 @@ public class CarServiceImpl implements CarService {
 
     @Autowired
     private CarDao carDao;
+    @Autowired
+    private bookDao bookdao;
+
+
+
+    @Autowired
+    private ElasticsearchTemplate esTemlpate;
 
     @Autowired
     private EmpDao empDao;
@@ -140,6 +154,62 @@ public class CarServiceImpl implements CarService {
         empDao.deleteById(id);
         carDao.delEmp(id);
 
+    }
+
+    @Override
+    public HashMap<String, Object> findcarList(Integer page, Integer rows, bookBean book) {
+        List<bookBean> list = new ArrayList<>();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        //1、获取es客户端对象
+        Client client = esTemlpate.getClient();
+        //2、创建查询对象：设置索引、类型
+        SearchRequestBuilder search = client.prepareSearch("book")//索引、数据库
+                .setTypes("book");//类型、表
+        //分页
+        search.setFrom((page-1)*rows);//开始位置
+        search.setSize(rows);//没有条数
+        //3、执行、获取查询结果
+        SearchResponse searchResponse = search.get();
+        SearchHits hits = searchResponse.getHits();
+        Iterator<SearchHit> iterator = hits.iterator();
+        while (iterator.hasNext()){
+            SearchHit next = iterator.next();
+            String str = next.getSourceAsString();
+            //把字符串转换成javabean对象
+            bookBean jobBean = JSONObject.parseObject(str, bookBean.class);
+            list.add(jobBean);
+        }
+        //获取总条数：
+        long total = hits.getTotalHits();
+        map.put("total",total);
+        map.put("rows",list);
+        return map;
+    }
+
+    @Override
+    public void toadd(bookBean book) {
+     int random=(int) Math.floor(Math.random()*8999+1000);
+        if(book.getId()!=null){
+            carDao.updateid(book);
+        }else{
+            book.setId(random);
+            carDao.toadd(book);
+        }
+        book.setId(random);
+        bookdao.save(book);
+
+    }
+
+    @Override
+    public void delJobById(Integer id) {
+        bookdao.deleteById(id);
+        carDao.delJobByIds(id);
+
+    }
+
+    @Override
+    public Optional<bookBean> findJobById(Integer id) {
+        return bookdao.findById(id);
     }
 
     private List<TreeBean> findNodes(int pid) {
