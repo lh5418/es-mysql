@@ -12,7 +12,7 @@ spring:
     #配置elasticSearch信息
     elasticsearch:
       #连接的集群名称
-      cluster-name: elasticsearch
+      cluster-name: my-elasticsearch
       #连接的集群节点
       cluster-nodes: 192.168.1.5:9300
       #是否开启本地储存
