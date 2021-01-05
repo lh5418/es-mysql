@@ -5,4 +5,25 @@
     <select id="findTreeByPid" parameterType="int" resultType="com.jk.pojo.TreeBean">
 		select * from t_trees where pid=#{pid}
 	</select>
+
+    <!--查询班级-->
+    <select id="findclass" resultType="com.jk.pojo.ClassBean">
+        select * from class
+    </select>
+    <!--查询学生-->
+    <select id="findClassById" resultType="com.jk.pojo.ClassBean">
+        select * from  class where classid=#{classid}
+    </select>
+    <!--新增学生-->
+    <insert id="addStu" useGeneratedKeys="true" keyProperty="id">
+        insert into stu(name,classid,info,age,salary,time,util) values(#{name},#{classid},#{info},#{age},#{salary},#{time},#{util})
+    </insert>
+    <!--修改学生-->
+    <update id="updateStu">
+        update stu set name=#{name},classid=#{classid},info=#{info},age=#{age},salary=#{salary},time=#{time},util=#{util} where id=#{id}
+    </update>
+    <!--删除学生-->
+    <delete id="delStu">
+        delete from stu where id =#{id}
+    </delete>
 </mapper>
