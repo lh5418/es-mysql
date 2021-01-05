@@ -5,4 +5,16 @@
     <select id="findTreeByPid" parameterType="int" resultType="com.jk.pojo.TreeBean">
 		select * from t_trees where pid=#{pid}
 	</select>
+    <!--新增员工-->
+    <insert id="addEmp" useGeneratedKeys="true" keyProperty="id">
+        insert into t_emp values(0,#{name},#{salary},#{time},#{zname})
+    </insert>
+    <!--修改-->
+    <update id="updateEmp">
+        update t_emp set name=#{name},salary=#{salary},time=#{time},zname=#{zname} where id=#{id}
+    </update>
+    <!--删除-->
+    <delete id="delEmp">
+        delete from t_emp where id=#{id}
+    </delete>
 </mapper>
