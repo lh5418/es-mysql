@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.dao.CarDao">
+    <!-- 根据pid查询树节点 -->
+    <select id="findTreeByPid" parameterType="int" resultType="com.jk.pojo.TreeBean">
+		select * from t_trees where pid=#{pid}
+	</select>
+</mapper>
