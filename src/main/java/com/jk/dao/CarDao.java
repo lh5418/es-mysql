@@ -1,6 +1,8 @@
 package com.jk.dao;
 
+import com.jk.pojo.ClassBean;
 import com.jk.pojo.EmpBean;
+import com.jk.pojo.StuBean;
 import com.jk.pojo.TreeBean;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
@@ -24,4 +26,14 @@ public interface CarDao {
     void updateEmp(EmpBean empBean);
 
     void delEmp(Integer id);
+
+    List<ClassBean> findclass();
+
+    ClassBean findClassById(Integer classid);
+
+    void addStu(StuBean stuBean);
+
+    void updateStu(StuBean stuBean);
+
+    void delStu(Integer id);
 }

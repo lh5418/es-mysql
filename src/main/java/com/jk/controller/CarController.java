@@ -1,6 +1,8 @@
 package com.jk.controller;
 
+import com.jk.pojo.ClassBean;
 import com.jk.pojo.EmpBean;
+import com.jk.pojo.StuBean;
 import com.jk.pojo.TreeBean;
 import com.jk.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,5 +107,51 @@ public class CarController {
     @ResponseBody
     public void addEmp(EmpBean empBean){
         carService.addEmp(empBean);
+    }
+
+    @RequestMapping("ban")
+    public String ban(){
+        return "ban";
+    }
+
+    @RequestMapping("stu")
+    public String stu(){
+        return "stu";
+    }
+
+
+    @RequestMapping("initTable")
+    @ResponseBody
+    public HashMap<String, Object> initTable(Integer page, Integer rows, StuBean stuBean) {
+        return carService.initTable(page, rows, stuBean);
+    }
+
+    @RequestMapping("findclass")
+    @ResponseBody
+    public List<ClassBean> findclass(){
+        return carService.findclass();
+    }
+
+    @RequestMapping("findStu")
+    @ResponseBody
+    public StuBean findStu(Integer id){
+        return carService.findStu(id);
+    }
+
+    @RequestMapping("addStu")
+    @ResponseBody
+    public void addStu(StuBean stuBean){
+        carService.addStu(stuBean);
+    }
+
+    @RequestMapping("delStu")
+    @ResponseBody
+    public void delStu(Integer id){
+        carService.delStu(id);
+    }
+
+    @RequestMapping("toAdd")
+    public String toAdd() {
+        return "addStu";
     }
 }

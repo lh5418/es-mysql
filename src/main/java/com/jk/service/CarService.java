@@ -1,6 +1,8 @@
 package com.jk.service;
 
+import com.jk.pojo.ClassBean;
 import com.jk.pojo.EmpBean;
+import com.jk.pojo.StuBean;
 import com.jk.pojo.TreeBean;
 
 import java.util.HashMap;
@@ -23,4 +25,14 @@ public interface CarService {
     Optional<EmpBean> findEmp(Integer id);
 
     void delEmp(Integer id);
+
+    List<ClassBean> findclass();
+
+    StuBean findStu(Integer id);
+
+    void addStu(StuBean stuBean);
+
+    void delStu(Integer id);
+
+    HashMap<String, Object> initTable(Integer page, Integer rows, StuBean stuBean);
 }

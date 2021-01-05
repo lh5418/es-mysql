@@ -3,7 +3,10 @@ package com.jk.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.jk.dao.CarDao;
 import com.jk.dao.EmpDao;
+import com.jk.dao.EsDao;
+import com.jk.pojo.ClassBean;
 import com.jk.pojo.EmpBean;
+import com.jk.pojo.StuBean;
 import com.jk.pojo.TreeBean;
 import com.jk.service.CarService;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -13,6 +16,7 @@ import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -39,6 +43,9 @@ public class CarServiceImpl implements CarService {
 
     @Autowired
     private EmpDao empDao;
+
+    @Autowired
+    private EsDao esDao;
 
     @Autowired
     private ElasticsearchTemplate esTemplate;
@@ -150,4 +157,119 @@ public class CarServiceImpl implements CarService {
         }
         return list;
     }
+
+    @Override
+    public HashMap<String, Object> initTable(Integer page, Integer rows, StuBean stuBean) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+
+        List<StuBean> list = new ArrayList<>();
+
+        Client client = esTemplate.getClient();
+        SearchRequestBuilder search = client.prepareSearch("stu")//索引、数据库
+                .setTypes("2006a");//类型、表
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        if(!StringUtils.isEmpty(stuBean.getYewu())){
+            bool.must(QueryBuilders.matchQuery("name",stuBean.getYewu()));
+            bool.must(QueryBuilders.matchQuery("util",stuBean.getYewu()));
+        }
+        RangeQueryBuilder price = QueryBuilders.rangeQuery("salary");
+        if(stuBean.getMinsalary()!=null){
+            price.gte(stuBean.getMinsalary());
+        }
+
+        if(stuBean.getMaxsalary()!=null){
+            price.lte(stuBean.getMaxsalary());
+        }
+        if(stuBean.getMinsalary()!=null || stuBean.getMaxsalary()!=null){
+            bool.must(price);
+        }
+        search.setQuery(bool);
+
+
+        //设置高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("name");//名称高亮
+        highlightBuilder.field("util");//简介高亮
+        // <font color="red"></font>
+        highlightBuilder.preTags("<font color=\"red\">");//前缀
+        highlightBuilder.postTags("</font>");//后缀
+        search.highlighter(highlightBuilder);
+
+        //排序: 先价格升序、id降序
+        search.addSort("age", SortOrder.ASC);
+        search.addSort("salary", SortOrder.DESC);
+
+        //分页
+        search.setFrom((page-1)*rows);//开始位置
+        search.setSize(rows);//没有条数
+
+        //3、执行、获取查询结果
+        SearchResponse searchResponse = search.get();
+
+        SearchHits hits = searchResponse.getHits();
+
+        Iterator<SearchHit> iterator = hits.iterator();
+        while (iterator.hasNext()){
+            SearchHit next = iterator.next();
+            String str = next.getSourceAsString();
+            //把字符串转换成javabean对象
+            StuBean stuBean1 = JSONObject.parseObject(str, StuBean.class);
+
+            //获取name的高亮内容
+            Map<String, HighlightField> highlightFields = next.getHighlightFields();
+            HighlightField name = highlightFields.get("name");
+            if(name!=null){
+
+                String name2 = name.getFragments()[0].toString();
+                stuBean1.setName(name2);
+            }
+
+            //处理简介高亮
+            HighlightField util = highlightFields.get("util");
+            if(util!=null){
+                String info2 = util.getFragments()[0].toString();
+                stuBean1.setUtil(info2);
+            }
+
+            list.add(stuBean1);
+        }
+
+        //获取总条数：
+        long total = hits.getTotalHits();
+        map.put("total",total);
+        map.put("rows",list);
+        return map;
+    }
+
+
+    @Override
+    public List<ClassBean> findclass() {
+        return carDao.findclass();
+    }
+
+    @Override
+    public StuBean findStu(Integer id) {
+        Optional<StuBean> stuBean=esDao.findById(id);
+        StuBean stuBean1 = stuBean.get();
+        return stuBean1;
+    }
+
+    @Override
+    public void addStu(StuBean stuBean) {
+        ClassBean classBean=carDao.findClassById(stuBean.getClassid());
+        stuBean.setClassname(classBean.getClassname());
+        if (stuBean.getId()==null) {
+            carDao.addStu(stuBean);
+        }else {
+            carDao.updateStu(stuBean);
+        }
+        esDao.save(stuBean);
+    }
+
+    @Override
+    public void delStu(Integer id) {
+        esDao.deleteById(id);
+        carDao.delStu(id);
+    }
+
 }

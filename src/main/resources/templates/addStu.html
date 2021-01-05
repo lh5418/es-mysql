@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container-fluid">
+    <form id="userForm">
+        <input id="id" style="display: none" name="id">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-2">
+                    <label>班级:</label>
+                </div>
+                <div class="col-md-4">
+                    <select  class="form-control" name="classid" id="classid"></select>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-2">
+                    <label>姓名:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="name" id="name" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-2">
+                    <label>简介:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="info" id="info" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-2">
+                    <label>年龄:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text"  name="age" id="age" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-2">
+                    <label>薪资:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text"  name="salary" id="salary" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-2">
+                    <label>就业时间:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text"  name="time" id="time" class="form-control nn">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-2">
+                    <label>就业单位:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text"  name="util" id="util" class="form-control">
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+</body>
+<script>
+    $('.nn').datetimepicker({
+        language: 'zh-CN',//显示中文
+        //format: 'yyyy-mm-dd hh:ii:ss',//显示格式
+        format: 'yyyy-mm-dd',//显示格式
+        minView: "month",//设置只显示到月份
+        initialDate: new Date(),//初始化当前日期
+        autoclose: true,//选中自动关闭
+        todayBtn: true//显示今日按钮
+    });
+</script>
+</html>

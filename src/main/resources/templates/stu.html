@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入bootstap的css文件 -->
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap.css">
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap-theme.css">
+    <!-- 引入jquery文件 -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <!-- 引入bootstrap的js文件 -->
+    <script type="text/javascript" src="../js/bootstrap/bootstrap3/js/bootstrap.min.js"></script>
+    <!-- bootstrap-table -->
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap-table/bootstrap-table.css">
+    <script src="../js/bootstrap/bootstrap-table/bootstrap-table.js"></script>
+    <script  src="../js/bootstrap/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+    <!-- 引入弹框的js文件 -->
+    <script src="../js/bootstrap/bootstrap-bootbox/bootbox.js"></script>
+    <!-- 引入日期得css和js文件 -->
+    <script src="../js/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    <script src="../js/bootstrap/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+
+    <!-- 引入上传文件的css和js文件 -->
+    <script src="../js/bootstrap/bootstrap-fileinput/js/fileinput.js"></script>
+    <script src="../js/bootstrap/bootstrap-fileinput/js/locales/zh.js"></script>
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap-fileinput/css/fileinput.css">
+</head>
+<body>
+<div id="toolbar">
+    <form class="form-inline">
+    <div class="form-group">
+        <label >模糊查：</label>
+    </div>
+    <input type="text" class="form-control" id="yewu" placeholder="请输入学生姓名/就业单位">
+    <div class="form-group">
+        <label >薪资：</label>
+    </div>
+        <input type="text" class="form-control" id="minsalary">-
+        <input type="text" class="form-control" id="maxsalary">
+    <button type="button" onclick="openStu()" class="btn btn-success ">添加学生</button>
+    <button type="button" onclick="searchStu()" class="btn btn-success ">搜索</button>
+    </form>
+</div>
+    <table class="table" id="mytable"></table>
+</body>
+<script>
+    $(function () {
+        initTable();
+    })
+    function searchStu() {
+        $('#mytable').bootstrapTable('refresh');//刷新表格
+    }
+    //删除
+    function delStu(id) {
+        bootbox.confirm({
+            size: "small",
+            title:"提示",
+            message: "是否确认删除?",
+            buttons: {
+                confirm: {
+                    label: '确定',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: '取消',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function(result){
+                if(result) {
+                    $.ajax({
+                        url: '/car/delStu',//后台请求地址
+                        type: 'post',
+                        data: {id: id},
+                        success: function () {
+                            bootbox.alert({
+                                size: "small",
+                                title: "提示",
+                                message: "删除成功",
+                                callback: function () {
+                                }
+                            })
+                            //刷新表格
+                            $("#mytable").bootstrapTable("refresh");
+                        }
+                    })
+                }
+        }
+        })
+    }
+    //打开修改弹框
+    function createAddContent(url) {
+        $.ajax({
+            url: url,
+            async: false,//同步，默认是：异步
+            success: function (data) {
+                res = data;
+            }
+        });
+        return res;
+    }
+    function updateStu(id){
+        bootbox.dialog({
+            title: '修改学生信息',
+            message: createAddContent("/car/toAdd"),//弹框内容
+            closeButton: true,//是否显示关闭按钮
+            buttons: {
+                "success": {
+                    "label": "<i class='icon-ok'></i> 保存",
+                    "className": "btn-sm btn-success",
+                    "callback": function () {
+                        //提交表单数据：保存
+                        $.ajax({
+                            url: '/car/addStu',//后台请求地址
+                            type: 'post',
+                            data: $("#userForm").serialize(),//表单序列化
+                            //dataType:'json',
+                            success: function () {
+                                bootbox.alert({
+                                    size: "small",
+                                    title: "提示",
+                                    message: "购买成功",
+                                    callback: function () {
+                                    }
+                                });
+                                //刷新表格
+                                $("#mytable").bootstrapTable("refresh");
+                            }
+                        });
+                    }
+                },
+                "cancel": {
+                    "label": "<i class='icon-info'></i> 取消",
+                    "className": "btn-sm btn-danger",
+                    "callback": function () {
+
+                    }
+                }
+            }
+        });
+        $.ajax({
+            url: '/car/findStu',//后台请求地址
+            type: 'post',
+            data:{id:id},
+            async: false,
+            success: function (data) {
+                initClass();
+                $("#id").val(data.id);
+                $("#name").val(data.name);
+                $("#info").val(data.info);
+                $("#age").val(data.age);
+                $("#salary").val(data.salary);
+                $("#time").val(data.time);
+                $("#util").val(data.util);
+                $("#classid").val(data.classid);
+            }
+        })
+
+    }
+    //班级查询
+    function initClass() {
+        $.ajax({
+            url: '/car/findclass',//后台请求地址
+            type: 'post',
+            async: false,
+            success: function (data) {
+                //拼接下拉列表的字符串
+                var str = "<option value='-1'>请选择</option>";
+                for (var i = 0; i < data.length; i++) {
+                    str += "<option value='" + data[i].classid + "'>" + data[i].classname + "</option>";
+                }
+                $("#classid").html(str);
+            }
+        });
+    }
+    //打开新增弹框
+    var res;
+    function createAddContent(url) {
+        $.ajax({
+            url: url,
+            async: false,//同步，默认是：异步
+            success: function (data) {
+                res = data;
+            }
+        });
+        return res;
+    }
+    function openStu() {
+        bootbox.dialog({
+            title: '新增学生',
+            message: createAddContent("/car/toAdd"),//弹框内容
+            closeButton: true,//是否显示关闭按钮
+            buttons: {
+                "success": {
+                    "label": "<i class='icon-ok'></i> 保存",
+                    "className": "btn-sm btn-success",
+                    "callback": function () {
+                        //提交表单数据：保存
+                        $.ajax({
+                            url: '/car/addStu',//后台请求地址
+                            type: 'post',
+                            data: $("#userForm").serialize(),//表单序列化
+                            //dataType:'json',
+                            success: function () {
+                                bootbox.alert({
+                                    size: "small",
+                                    title: "提示",
+                                    message: "新增成功",
+                                    callback: function () {
+                                    }
+                                });
+                                //刷新表格
+                                $("#mytable").bootstrapTable("refresh");
+                            }
+                        });
+                    }
+                },
+                "cancel": {
+                    "label": "<i class='icon-info'></i> 取消",
+                    "className": "btn-sm btn-danger",
+                    "callback": function () {
+
+                    }
+                }
+            }
+        });
+        initClass();
+    }
+    //初始化加载表格
+    function initTable() {
+        $('#mytable').bootstrapTable({
+            url: '/car/initTable',//获取数据地址
+            pagination: true, //是否展示分页
+            pageList: [2, 4, 6, 8],
+            //分页组件
+            pageNumber: 1,
+            pageSize: 2,//默认每页条数 //
+            sidePagination: 'server',//分页方式：client客户端分页，server服务端分页 （*
+            queryParams: function () {
+                return {
+                    page: this.pageNumber,
+                    rows: this.pageSize,
+                    yewu:$("#yewu").val(),
+                    minsalary:$("#minsalary").val(),
+                    maxsalary:$("#maxsalary").val()
+                };
+            },
+            columns: [{checkbox: true},
+                {field: 'id', title: 'id', align: 'center', width: 150},
+                {field: 'name', title: '名称', align: 'center', width: 150},
+                {field: 'info', title: '简介', width: 150, align: 'center'},
+                {field: 'age', title: '年龄', width: 150, align: 'center'},
+                {field: 'salary', title: '薪资', width: 150, align: 'center'},
+                {field: 'time', title: '就业时间', width: 150, align: 'center'},
+                {field: 'util', title: '就业单位', width: 150, align: 'center'},
+                {field: 'classname', title: '班级', width: 150, align: 'center'},
+                {field: 'tools', title: '操作', width: 150, align: 'center',formatter: function (value, row, index) {
+                        return "<a class='btn btn-info' href='javascript:updateStu(" + row.id+")'>修改</a> | <a class='btn btn-info' href='javascript:delStu(" + row.id+")'>删除</a>";
+                    }},
+
+            ]
+        });
+
+    }
+</script>
+</html>
