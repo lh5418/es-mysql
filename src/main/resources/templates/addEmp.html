@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="userform">
+    <div class="form-group">
+        <input style="display: none" id="id" name="id">
+        <div class="row">
+            <div class="col-md-2">
+                <label >姓名：</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="name" id="name" class="form-control" >
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-2">
+                <label >部门名称</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="zname"  id="zname" class="form-control" >
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-2">
+                <label >工资</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="salary"  id="salary" class="form-control" >
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-md-2">
+                <label >入职时间</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="time"  id="time" class="form-control nn" >
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+<script>
+    $('.nn').datetimepicker({
+        language: 'zh-CN',//显示中文
+        //format: 'yyyy-mm-dd hh:ii:ss',//显示格式
+        format: 'yyyy-mm-dd',//显示格式
+        minView: "month",//设置只显示到月份
+        initialDate: new Date(),//初始化当前日期
+        autoclose: true,//选中自动关闭
+        todayBtn: true//显示今日按钮
+    });
+</script>
+</html>

@@ -1,8 +1,11 @@
 package com.jk.service;
 
+import com.jk.pojo.EmpBean;
 import com.jk.pojo.TreeBean;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @program: es-mysql
@@ -12,4 +15,12 @@ import java.util.List;
  */
 public interface CarService {
     List<TreeBean> findTree();
+
+    HashMap<String, Object> efindTable(Integer page, Integer rows, EmpBean empBean);
+
+    void addEmp(EmpBean empBean);
+
+    Optional<EmpBean> findEmp(Integer id);
+
+    void delEmp(Integer id);
 }
