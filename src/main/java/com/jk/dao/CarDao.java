@@ -1,5 +1,6 @@
 package com.jk.dao;
 
+import com.jk.pojo.EmpBean;
 import com.jk.pojo.TreeBean;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
@@ -17,4 +18,10 @@ import java.util.List;
 @Repository
 public interface CarDao {
     List<TreeBean> findTreeByPid(int pid);
+
+    void addEmp(EmpBean empBean);
+
+    void updateEmp(EmpBean empBean);
+
+    void delEmp(Integer id);
 }
