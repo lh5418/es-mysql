@@ -3,6 +3,7 @@ package com.jk.controller;
 import com.jk.pojo.ClassBean;
 import com.jk.pojo.EmpBean;
 import com.jk.pojo.StuBean;
+import com.jk.pojo.CarBean;
 import com.jk.pojo.TreeBean;
 import com.jk.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.Optional;
 /**
  * @program: es-mysql
  * @description:
- * @author: 刘洋朋
+ * @author: 刘洋朋ss
  * @create: 2021-01-05 19:21
  */
 @Controller
@@ -26,15 +27,73 @@ public class CarController {
     @Autowired
     private CarService carService;
 
+    @RequestMapping("show1")
+    public String show1(){
+        return "show1";
+    }
+    @RequestMapping("addShow1")
+    public String addShow1(){
+        return "addShow1";
+    }
+
+    /**
+     * 树
+     * @return
+     */
     @RequestMapping("findTree")
     @ResponseBody
     public List<TreeBean> findTree(){
         return carService.findTree();
     }
 
+    /**
+     * 查询
+     * @param page
+     * @param rows
+     * @param car
+     * @return
+     */
+    @RequestMapping("findCar")
+    @ResponseBody
+    public HashMap<String,Object> findCar(Integer page, Integer rows, CarBean car){
+        return carService.findCar(page,rows,car);
+    }
 
     /**
-     * @Author lh 
+     * 新增修改
+     * @param car
+     */
+    @RequestMapping("addCar")
+    @ResponseBody
+    public void addCar(CarBean car){
+        carService.addCar(car);
+    }
+
+    /**
+     * 回显
+     * @param id
+     * @return
+     */
+    @RequestMapping("findCarById")
+    @ResponseBody
+    public Optional<CarBean> findJobById(Integer id){
+        return carService.findCarById(id);
+    }
+
+    /**
+     * 删除
+     * @param id
+     */
+    @RequestMapping("delCarById")
+    @ResponseBody
+    public void delCarById(Integer id){
+        carService.delCarById(id);
+    }
+
+
+
+    /**
+     * @Author lh
      * @Description  show页面
      * @Date 20:10 2021/1/5
      * @Param []
@@ -59,7 +118,7 @@ public class CarController {
     }
 
     /**
-     * @Author lh 
+     * @Author lh
      * @Description  删除
      * @Date 20:21 2021/1/5
      * @Param [id]
@@ -72,7 +131,7 @@ public class CarController {
     }
 
     /**
-     * @Author lh 
+     * @Author lh
      * @Description  修改回显
      * @Date 20:22 2021/1/5
      * @Param [id]

@@ -6,6 +6,10 @@
 		select * from t_trees where pid=#{pid}
 	</select>
 
+    <insert id="addCar" useGeneratedKeys="true" keyProperty="id">
+        insert into t_car (carName,carPrice)values(#{carName},#{carPrice})
+    </insert>
+
     <!--查询班级-->
     <select id="findclass" resultType="com.jk.pojo.ClassBean">
         select * from class
