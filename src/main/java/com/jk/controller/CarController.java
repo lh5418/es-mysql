@@ -113,7 +113,7 @@ public class CarController {
      */
     @RequestMapping("findCarById")
     @ResponseBody
-    public Optional<CarBean> findJobById(Integer id){
+    public Optional<CarBean> findCarById(Integer id){
         return carService.findCarById(id);
     }
 
