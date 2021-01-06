@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<form id="myform">
+    <table>
+        <tr>
+            <td><label>姓名</label></td>
+            <td>
+                <input type="text" class="form-control" name="id" id="id"style="display: none">
+                <input type="text" class="form-control" name="stuName" id="aa">
+            </td>
+        </tr>
+        <tr>
+            <td><label>坐好</label></td>
+            <td>
+                <select id="type" name="classId"></select>
+            </td>
+        </tr>
+        <tr>
+            <td><label>简介</label></td>
+            <td>
+                <input type="text" class="form-control" name="info" id="info">
+            </td>
+        </tr>
+        <tr>
+            <td><label>座位</label></td>
+            <td>
+                <input type="text" class="form-control" id="age" name="age">
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+<script>
+    $(function(){
+        initType()
+    })
+    //初始化下拉列表
+    function initType(){
+        $.ajax({
+            url:'../car/ntffindClass',//后台请求地址
+            type:'get',
+            success:function(data){
+                //拼接下拉列表的字符串
+                var str = "<option value='-1'>请选择</option>";
+                for(var i=0;i<data.length;i++){
+                    str += "<option value='"+data[i].classId+"'>"+data[i].className+"</option>";
+                }
+                $("#type").html(str);
+            }
+        });
+    }
+    $('.date').datetimepicker({
+        language: 'zh-CN',//显示中文
+        //format: 'yyyy-mm-dd hh:ii:ss',//显示格式
+        format: 'yyyy-mm-dd',//显示格式
+        minView: "month",//设置只显示到月份
+        initialDate: new Date(),//初始化当前日期
+        autoclose: true,//选中自动关闭
+        todayBtn: true//显示今日按钮
+    });
+</script>
+</html>

@@ -6,6 +6,20 @@
 		select * from t_trees where pid=#{pid}
 	</select>
 
+    <insert id="ntfaddJob" >
+        insert into t_job (stuName,classId,info,age)values(#{stuName},#{classId},#{info},#{age})
+    </insert>
+
+
+    <select id="selectCount" resultType="int" parameterType="com.jk.pojo.ntfjob">
+        select count(*) from t_job
+    </select>
+
+    <select id="select" resultType="com.jk.pojo.ntfjob" >
+        select * from t_job t left join t_class ty on t.classId = ty.classId LIMIT  #{start},#{end}
+    </select>
+
+
     <insert id="toadd" parameterType="com.jk.pojo.bookBean">
         insert  into t_book values (#{id},#{name},#{info},#{age})
     </insert>

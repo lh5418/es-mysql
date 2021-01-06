@@ -5,6 +5,8 @@ import com.jk.pojo.ClassBean;
 import com.jk.pojo.EmpBean;
 import com.jk.pojo.StuBean;
 import com.jk.pojo.TreeBean;
+import com.jk.pojo.ntfclass;
+import com.jk.pojo.ntfjob;
 import com.jk.pojo.bookBean;
 
 import java.util.HashMap;
@@ -19,6 +21,18 @@ import java.util.Optional;
  */
 public interface CarService {
     List<TreeBean> findTree();
+
+    HashMap<String, Object> ntffindJob(Integer page, Integer rows, ntfjob job);
+
+    void ntfaddJob(ntfjob job);
+
+    Optional<ntfjob> ntffindJobById(Integer id);
+
+    void ntfdelJobById(Integer id);
+
+    List<ntfclass> ntffindClass();
+
+    void delJob(Integer id);
 
     HashMap<String, Object> findCar(Integer page, Integer rows, CarBean car);
 

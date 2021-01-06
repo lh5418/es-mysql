@@ -11,6 +11,8 @@ import com.jk.pojo.EmpBean;
 import com.jk.pojo.StuBean;
 import com.jk.dao.bookDao;
 import com.jk.pojo.TreeBean;
+import com.jk.pojo.ntfclass;
+import com.jk.pojo.ntfjob;
 import com.jk.pojo.bookBean;
 import com.jk.service.CarService;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -45,6 +47,27 @@ import org.elasticsearch.search.SearchHits;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSONObject;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.util.*;
+
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -81,6 +104,8 @@ public class CarServiceImpl implements CarService {
     @Autowired
     private ElasticsearchTemplate esTemplate;
 
+    @Autowired
+    private  ElasticsearchTemplate elasticsearchTemplate;
     @Override
     public List<TreeBean> findTree() {
         int pid=0;
@@ -244,6 +269,54 @@ public class CarServiceImpl implements CarService {
         }
         return list;
     }
+
+    @Override
+    public HashMap<String, Object> ntffindJob(Integer page, Integer rows, ntfjob job) {
+        int count = carDao.selectCount(job);
+        int start =(page-1)*rows+1;
+        int end =page*rows;
+
+        List list = carDao.select(start,end,job);
+        HashMap<String, Object>map= new HashMap<>();
+        map.put("total", count);
+        map.put("rows", list);
+
+        return map;
+    }
+
+    @Override
+    public void ntfaddJob(ntfjob job) {
+        Integer classId = job.getClassId();
+        ntfclass classBean=carDao.ntffindClassName(classId);
+        job.setClassName(classBean.getClassName());
+        if(job.getId()==null){
+            carDao.ntfaddJob(job);
+        }else{
+            carDao.ntfupdJob(job);
+        }
+    }
+
+    @Override
+    public Optional<ntfjob> ntffindJobById(Integer id) {
+        return carDao.ntffindById(id);
+    }
+
+    @Override
+    public void ntfdelJobById(Integer id) {
+        carDao.ntfdeleteById(id);
+        carDao.ntfdelJobByIds(id);
+    }
+
+    @Override
+    public List<ntfclass> ntffindClass() {
+        return carDao.ntffindClass();
+    }
+
+    @Override
+    public void delJob(Integer id) {
+        carDao.delJob(id);
+    }
+
 
     @Override
     public HashMap<String, Object> findCar(Integer page, Integer rows, CarBean car) {

@@ -5,6 +5,8 @@ import com.jk.pojo.EmpBean;
 import com.jk.pojo.StuBean;
 import com.jk.pojo.CarBean;
 import com.jk.pojo.TreeBean;
+import com.jk.pojo.ntfclass;
+import com.jk.pojo.ntfjob;
 import com.jk.pojo.bookBean;
 import com.jk.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,63 @@ public class CarController {
     @ResponseBody
     public List<TreeBean> findTree(){
         return carService.findTree();
+    }
+    //ntf
+    @RequestMapping("ntfselect")
+    public String selectntf(){
+        return "showntf";
+    }
+
+    @RequestMapping("ntfadd")
+    public String ntfadd(){
+        return "ntfadd";
+    }
+
+
+
+    /**
+     * 分页
+     * @param page
+     * @param rows
+     * @param job
+     * @return
+     */
+    @RequestMapping("findNodes")
+    @ResponseBody
+    public HashMap<String,Object> findNodes(Integer page, Integer rows, ntfjob job){
+        return carService.ntffindJob(page,rows,job);
+    }
+
+    @RequestMapping("ntfaddJob")
+    @ResponseBody
+    public void ntfaddTrain(ntfjob job){
+        carService.ntfaddJob(job);
+    }
+
+    @RequestMapping("ntffindJobById")
+    @ResponseBody
+    public Optional<ntfjob> ntffindJobById(Integer id){
+        return carService.ntffindJobById(id);
+    }
+
+    @RequestMapping("ntfdelJobById")
+    @ResponseBody
+    public void ntfdelJobById(Integer id){
+        carService.ntfdelJobById(id);
+    }
+
+    @RequestMapping("ntffindClass")
+    @ResponseBody
+    public List<ntfclass> ntffindClass(){
+        return carService.ntffindClass();
+    }
+
+
+
+    @RequestMapping("deletess")
+    @ResponseBody
+    public void delJob(Integer id){
+        carService.delJob(id);
     }
 
     @RequestMapping("findcarList")
