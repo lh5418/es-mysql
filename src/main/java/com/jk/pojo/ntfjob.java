@@ -19,7 +19,7 @@ public class ntfjob {
     private Integer pay;
 
     @Transient //临时字段
-    private Integer minPay;
+    private Integer minPay000;
     @Transient //临时字段
     private Integer maxPay;
     private String className;
