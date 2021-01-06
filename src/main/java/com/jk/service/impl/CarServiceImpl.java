@@ -92,8 +92,6 @@ public class CarServiceImpl implements CarService {
     private ElasticsearchTemplate esTemlpate;
     @Autowired
     private CarDaos carDaos;
-    @Autowired
-    private ElasticsearchTemplate esTemlpate;
 
     @Autowired
     private EmpDao empDao;
