@@ -99,11 +99,6 @@ public class CarServiceImpl implements CarService {
     @Autowired
     private EsDao esDao;
 
-    @Autowired
-    private ElasticsearchTemplate esTemplate;
-
-    @Autowired
-    private  ElasticsearchTemplate elasticsearchTemplate;
     @Override
     public List<TreeBean> findTree() {
         int pid=0;
@@ -228,7 +223,6 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public void toadd(bookBean book) {
-     int random=(int) Math.floor(Math.random()*8999+1000);
         if(book.getId()!=null){
             carDao.updateid(book);
         }else{
