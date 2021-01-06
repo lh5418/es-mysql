@@ -2,6 +2,8 @@ package com.jk.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jk.dao.CarDao;
+import com.jk.dao.CarDaos;
+import com.jk.pojo.CarBean;
 import com.jk.dao.EmpDao;
 import com.jk.dao.EsDao;
 import com.jk.pojo.ClassBean;
@@ -11,6 +13,17 @@ import com.jk.dao.bookDao;
 import com.jk.pojo.TreeBean;
 import com.jk.pojo.bookBean;
 import com.jk.service.CarService;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -52,6 +65,10 @@ public class CarServiceImpl implements CarService {
 
 
 
+    @Autowired
+    private ElasticsearchTemplate esTemlpate;
+    @Autowired
+    private CarDaos carDaos;
     @Autowired
     private ElasticsearchTemplate esTemlpate;
 
@@ -227,6 +244,102 @@ public class CarServiceImpl implements CarService {
         }
         return list;
     }
+
+    @Override
+    public HashMap<String, Object> findCar(Integer page, Integer rows, CarBean car) {
+        List<CarBean> list = new ArrayList<>();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        //1、获取es客户端对象
+        Client client = esTemlpate.getClient();
+        //2、创建查询对象：设置索引、类型
+        SearchRequestBuilder search = client.prepareSearch("lypcar")//索引、数据库
+                .setTypes("car");//类型、表
+/*
+        //条查
+        if(!StringUtils.isEmpty(book.getName())){
+            search.setQuery(QueryBuilders.matchQuery("name",book.getName()));
+        }
+*/
+        //混合查询、组合查询：同时查询名称、简介
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        if(!StringUtils.isEmpty(car.getCarName())){
+            //查询名称
+            bool.must(QueryBuilders.matchQuery("carName",car.getCarName()));
+            //查询简介
+        }
+        RangeQueryBuilder uploadTime = QueryBuilders.rangeQuery("carPrice");
+        if(car.getMinPay()!=null){
+            uploadTime.gt(car.getMinPay());
+        }
+
+        if(car.getMaxPay()!=null){
+            uploadTime.lt(car.getMaxPay());
+        }
+        if(car.getMinPay()!=null || car.getMaxPay()!=null){
+            bool.must(uploadTime);
+        }
+        search.setQuery(bool);
+        //设置高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("carName");
+        // <font color="red"></font>
+        highlightBuilder.preTags("<font color=\"red\">");//前缀
+        highlightBuilder.postTags("</font>");//后缀
+        search.highlighter(highlightBuilder);
+        search.addSort("carPrice", SortOrder.ASC);
+        //分页
+        search.setFrom((page-1)*rows);//开始位置
+        search.setSize(rows);//没有条数
+        //3、执行、获取查询结果
+        SearchResponse searchResponse = search.get();
+        SearchHits hits = searchResponse.getHits();
+        Iterator<SearchHit> iterator = hits.iterator();
+        while (iterator.hasNext()){
+            SearchHit next = iterator.next();
+            String str = next.getSourceAsString();
+            //把字符串转换成javabean对象
+            CarBean jobBean = JSONObject.parseObject(str, CarBean.class);
+            //获取name的高亮内容
+            Map<String, HighlightField> highlightFields = next.getHighlightFields();
+            HighlightField name = highlightFields.get("carName");
+            if(name!=null){
+                /*Text[] fragments = name.getFragments();
+                Text fragment = fragments[0];
+                String s = fragment.toString();*/
+                String name2 = name.getFragments()[0].toString();
+                jobBean.setCarName(name2);
+            }
+            list.add(jobBean);
+        }
+        //获取总条数：
+        long total = hits.getTotalHits();
+        map.put("total",total);
+        map.put("rows",list);
+        return map;
+    }
+
+    @Override
+    public void addCar(CarBean car) {
+        if(car.getId()==null){
+            carDao.addCar(car);
+        }else{
+            carDao.updCar(car);
+        }
+        carDaos.save(car);
+    }
+
+    @Override
+    public Optional<CarBean> findCarById(Integer id) {
+        return carDaos.findById(id);
+    }
+
+    @Override
+    public void delCarById(Integer id) {
+        carDaos.deleteById(id);
+        carDao.delById(id);
+    }
+
+
 
     @Override
     public HashMap<String, Object> initTable(Integer page, Integer rows, StuBean stuBean) {
